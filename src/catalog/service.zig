@@ -16,6 +16,8 @@ pub const LoadResult = enum {
 
 pub const PickResult = union(enum) {
     title_id: []const u8,
+    // Index into the console list previously given to the UI (xHome).
+    console: usize,
     cancelled,
     sign_out,
 };
@@ -117,6 +119,11 @@ pub const Service = struct {
         );
         if (selected == c.GO_HANDHELD_UI_PICK_SIGN_OUT) return .sign_out;
         if (selected == c.GO_HANDHELD_UI_PICK_CANCELLED) return .cancelled;
+        if (selected <= c.GO_HANDHELD_UI_PICK_CONSOLE_BASE) {
+            const index: usize = @intCast(c.GO_HANDHELD_UI_PICK_CONSOLE_BASE - selected);
+            std.debug.print("Selected console index: {d}\n", .{index});
+            return .{ .console = index };
+        }
         if (selected < 0) return error.InvalidSelection;
         if (selected >= self.count) return error.InvalidSelection;
         const title = &titles[@intCast(selected)];

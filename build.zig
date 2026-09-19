@@ -45,6 +45,7 @@ const release_zig_roots = [_]struct {
         .path = "src/session/cloud_session.zig",
         .imports = &.{.{ .name = "json_reader", .path = "src/net/json_reader.zig" }},
     },
+    .{ .name = "greenovercast-consoles", .path = "src/catalog/consoles.zig" },
     .{
         .name = "greenovercast-webrtc",
         .path = "src/session/webrtc_session.zig",
@@ -461,6 +462,7 @@ pub fn build(b: *std.Build) void {
         "src/app/state.zig",
         "src/catalog/catalog_parser.zig",
         "src/catalog/catalog_search.zig",
+        "src/catalog/consoles_parser.zig",
         "src/input/wire_encoder.zig",
         "src/input/guide_chord.zig",
         "src/session/message_protocol.zig",
