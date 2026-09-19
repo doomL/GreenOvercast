@@ -683,6 +683,14 @@ pub export fn go_handheld_ui_cancelled(ui: ?*const Ui) c_int {
     return @intFromBool(if (ui) |handle| handle.cancelled else false);
 }
 
+pub export fn go_handheld_ui_software_decoder(ui: ?*const Ui) c_int {
+    return @intFromBool((ui orelse return 0).settings.video_decoder == .software);
+}
+
+pub export fn go_handheld_ui_smooth_video(ui: ?*const Ui) c_int {
+    return @intFromBool((ui orelse return 0).settings.smooth_video);
+}
+
 pub export fn go_handheld_ui_stream_width(ui: ?*const Ui) c_uint {
     return (ui orelse return 640).stream_width;
 }

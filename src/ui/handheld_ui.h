@@ -53,6 +53,10 @@ int go_handheld_ui_pick_title(GoHandheldUi* ui, const GoCatalogTitle* titles, in
  * GO_UI_MAX_CONSOLES). count <= 0 hides the tab. */
 void go_handheld_ui_set_consoles(GoHandheldUi* ui, const GoUiConsoleRow* rows, int count);
 int go_handheld_ui_cancelled(const GoHandheldUi* ui);
+/* Nonzero when Settings asks for the software video decoder. */
+int go_handheld_ui_software_decoder(const GoHandheldUi* ui);
+/* Nonzero when Settings asks for frame smoothing. */
+int go_handheld_ui_smooth_video(const GoHandheldUi* ui);
 unsigned int go_handheld_ui_stream_width(const GoHandheldUi* ui);
 unsigned int go_handheld_ui_stream_height(const GoHandheldUi* ui);
 

@@ -73,6 +73,7 @@ pub const Release = struct {
     home_needs_connect: bool = false,
     home_provisioned: bool = false,
     webrtc: ?*c.GoWebrtcSession = null,
+    software_decoder: bool = false,
     catalog: ?*catalog_service.Service = null,
     curl_initialized: bool = false,
     requested_title: [128]u8 = [_]u8{0} ** 128,
@@ -89,6 +90,9 @@ pub const Release = struct {
             std.debug.print("Invalid GREENOVERCAST_VIDEO_DECODER value\n", .{});
             return false;
         }
+        if (decoder_value == null and c.go_handheld_ui_software_decoder(self.ui()) != 0)
+            decoder_preference = c.GO_VIDEO_DECODER_PREFERENCE_SOFTWARE;
+        self.software_decoder = decoder_preference == c.GO_VIDEO_DECODER_PREFERENCE_SOFTWARE;
         const config = c.GoVideoPipelineConfig{
             .renderer = c.go_sdl_platform_renderer(self.platform),
             .bootstrap_path = if (bootstrap_path) |path| path.ptr else null,
@@ -112,6 +116,18 @@ pub const Release = struct {
             return false;
         }
         return true;
+    }
+
+    // Settings can switch the video decoder between streams; rebuild the media
+    // pipeline when the wanted decoder no longer matches the running one.
+    fn refreshDecoder(self: *Release) bool {
+        const wanted = if (std.posix.getenv("GREENOVERCAST_VIDEO_DECODER")) |value|
+            std.mem.eql(u8, value, "software")
+        else
+            c.go_handheld_ui_software_decoder(self.ui()) != 0;
+        if (wanted == self.software_decoder) return true;
+        self.destroyMedia();
+        return self.initializeMedia();
     }
 
     fn destroyMedia(self: *Release) void {
@@ -329,6 +345,7 @@ pub const Release = struct {
     }
 
     pub fn createSession(self: *Release) Result {
+        if (!self.refreshDecoder()) return .failed;
         if (self.mode == .home) {
             if (self.server_id[0] == 0 or self.home == null) return .failed;
             self.drawLoading("STARTING STREAM", "CONNECTING TO YOUR XBOX", c.GO_HANDHELD_UI_ACTION_CANCEL);
@@ -474,6 +491,7 @@ pub const Release = struct {
         }
 
         const controller_input = self.controller();
+        c.go_video_pipeline_set_smooth(self.video, c.go_handheld_ui_smooth_video(self.ui()));
         while (true) {
             var event: c.SDL_Event = undefined;
             while (c.SDL_PollEvent(&event) != 0) {

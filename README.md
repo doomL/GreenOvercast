@@ -41,8 +41,15 @@ GreenOvercast is experimental.
 | L3 + R3            | —                                 | Xbox Guide                        |
 | Select + Start     | Exit after holding for one second | Exit after holding for one second |
 
-Settings include Xbox/Nintendo face-button layouts, game artwork, and Sign
-out. Games that return a 16:9 stream remain letterboxed on 4:3 displays.
+Settings include Xbox/Nintendo face-button layouts, game artwork, the video
+decoder, video smoothing, and Sign out. Games that return a 16:9 stream remain
+letterboxed on 4:3 displays.
+
+The **video decoder** can be switched from Auto to Software. On some streams
+the Cedar hardware decoder leaves blocky artifacts on the right side of the
+picture; software decoding avoids them at the cost of CPU time. **Smooth video**
+keeps a second frame queued so bursts of decoded frames are not dropped, at the
+cost of up to one frame of extra latency.
 
 ## Home streaming
 
